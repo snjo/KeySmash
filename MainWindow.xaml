@@ -17,14 +17,16 @@
                     <MenuItem Header="_Delay">
                         
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="-" Padding="5 0"/>
-                                <TextBlock x:Name="DelayInput" Text="4" Width="20" Padding="5 0"/>
-                                <Button Content="+" Padding="5 0"/>
+                                <Button Content="-" Padding="5 0" Click="ClickDecreaseDelay"/>
+                                <TextBlock x:Name="DelayInput" Text="4" Width="40" HorizontalAlignment="Center" Padding="5 0"/>
+                                <Button Content="+" Padding="5 0" Click="ClickIncreaseDelay"/>
                             </StackPanel>
                         
                     </MenuItem>
+                    <MenuItem Header="Slow output" IsCheckable="True" x:Name="MenuItemSlowMode" IsChecked="{Binding UseKeyInterval}"/>
+                    <MenuItem Header="Fix caret (^)" IsCheckable="True" x:Name="MenuItemFixCaret" IsChecked="{Binding FixScandinavianCaret}"/>
                     <!-- <MenuItem Header="_Hide text" x:Name="MenuItemToggleHiddenText" Click="ToggleHiddenText"/> -->
-                    <MenuItem Header="E_xit"/>
+                    <MenuItem Header="E_xit" Click="ExitApplication"/>
                 </MenuItem>
             </Menu>
 

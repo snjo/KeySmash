@@ -25,15 +25,15 @@ namespace KeySmash
     {
         private bool _hiddenText = true;
         int StartKeysDelayInMilliSeconds = 2000;
-        int KeysIntervalInMilliSeconds = 20;
+        int KeysIntervalInMilliSeconds = 50;
         private TimeSpan TimerStartKeysDelay;
         private TimeSpan TimerKeyStrokeInterval;
         private string TextToSend = "";
         private List<string> KeySequence = [];
         DispatcherTimer SendKeyStartTimer = new DispatcherTimer();
         DispatcherTimer SendKeyStrokeTimer = new DispatcherTimer();
-        bool UseKeyInterval = false;
-        bool FixScandinavianCaret = true;
+        public bool UseKeyInterval { get; set; } = false;
+        public bool FixScandinavianCaret { get; set; } = true;
 
         public bool HiddenText
         {
@@ -58,15 +58,24 @@ namespace KeySmash
             MouseDown += Window_MouseDown;
             SendKeyStartTimer.Tick += StartKeyPresses;
             SendKeyStrokeTimer.Tick += SendKeyStroke;
+            UpdateDelay();
+            this.Topmost = true;
+        }
+
+        public void ExitApplication(object sender, EventArgs e)
+        { 
+            Close();
         }
 
         private void ButtonSendText_Click(object sender, RoutedEventArgs e)
         {
+            TextToSend = TextBoxMain.Text;
+            if (TextToSend == "") return;
+            TimerStartKeysDelay = TimeSpan.FromMilliseconds(StartKeysDelayInMilliSeconds);
             SendKeyStartTimer.Interval = TimerStartKeysDelay;
             SendKeyStartTimer.Start();
-            TextToSend = TextBoxMain.Text;
-            Debug.WriteLine($"Text to send:{TextToSend}:");
-            if (TextToSend == "") TextToSend = "Lorem Ipsum! {} () [] ^ % ~ ok";
+            //Debug.WriteLine($"Text to send:{TextToSend}:");
+            if (TextToSend == "¤") TextToSend = "Lorem Ipsum! {} () [] ^ % ~ ok"; // test string
             CreateKeySequence(TextToSend);
         }
 
@@ -141,6 +150,24 @@ namespace KeySmash
         {
             HiddenText = !HiddenText;
             Debug.WriteLine($"Toggle hidden {HiddenText}");
+        }
+
+        private void ClickDecreaseDelay(object sender, RoutedEventArgs e)
+        {
+            StartKeysDelayInMilliSeconds -= 500;
+            UpdateDelay();
+        }
+
+        private void ClickIncreaseDelay(object sender, RoutedEventArgs e)
+        {
+            StartKeysDelayInMilliSeconds += 500;
+            UpdateDelay();
+        }
+
+        private void UpdateDelay()
+        {
+            StartKeysDelayInMilliSeconds = Math.Clamp(StartKeysDelayInMilliSeconds, 500, 5000);
+            DelayInput.Text = $"{(float)StartKeysDelayInMilliSeconds / 1000f:0.0}s";
         }
     }
 }
