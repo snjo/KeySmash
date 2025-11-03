@@ -88,7 +88,7 @@ namespace KeySmash
 
         private void TextBoxMain_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            Debug.WriteLine($"Update text colors");
+            //Debug.WriteLine($"Update text colors");
             TextBoxMain.TextChanged -= TextBoxMain_TextChanged;
 
             TextRange fullRange = new TextRange(TextBoxMain.Document.ContentStart, TextBoxMain.Document.ContentEnd);
@@ -200,9 +200,15 @@ namespace KeySmash
                     if (System.Windows.Clipboard.ContainsText())
                     {
                         string clip = System.Windows.Clipboard.GetText();
-                        if (clip.Length == 0) UserText = "";
-                        if (clip.Length > 50) UserText = "";
-                        UserText = clip;
+                        if (clip.Length == 0 || clip.Length > 50)
+                        {
+                            UserText = "";
+                            System.Media.SystemSounds.Beep.Play();
+                        }
+                        else
+                        {
+                            UserText = clip;
+                        }
                     }
                 }
             }
