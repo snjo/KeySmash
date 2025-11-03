@@ -3,7 +3,9 @@ using KeySmash.Properties;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -65,6 +67,91 @@ namespace KeySmash
             HotkeyTypeTextCtrl.IsChecked = settings.hkTypeTextCtrl;
             HotkeyTypeTextAlt.IsChecked = settings.hkTypeTextAlt;
             HotkeyTypeTextShift.IsChecked = settings.hkTypeTextShift;
+
+            TextBoxMain.TextChanged += TextBoxMain_TextChanged;
+        }
+
+        private string UserText
+        {
+            get
+            {
+                string text = new TextRange(TextBoxMain.Document.ContentStart, TextBoxMain.Document.ContentEnd).Text;
+                text = text.Trim();
+                return text;
+            }
+            set
+            {
+                TextBoxMain.Document.Blocks.Clear();
+                TextBoxMain.Document.Blocks.Add(new Paragraph(new Run(value)));
+            }
+        }
+
+        private void TextBoxMain_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            Debug.WriteLine($"Update text colors");
+            TextBoxMain.TextChanged -= TextBoxMain_TextChanged;
+
+            TextRange fullRange = new TextRange(TextBoxMain.Document.ContentStart, TextBoxMain.Document.ContentEnd);
+            fullRange.ClearAllProperties();
+            string text = fullRange.Text;
+
+            // code from: https://stackoverflow.com/questions/50278754/how-to-highlight-numbers-in-wpf-richtextbox
+
+            var tags = new List<TextTag>();
+
+            TextPointer navigator = TextBoxMain.Document.ContentStart;
+            while (navigator.CompareTo(TextBoxMain.Document.ContentEnd) < 0)
+            {
+                TextPointerContext context = navigator.GetPointerContext(LogicalDirection.Backward);
+                if (context == TextPointerContext.ElementStart && navigator.Parent is Run)
+                {
+                    text = ((Run)navigator.Parent).Text;
+                    if (text != "")
+                        tags.AddRange(CheckWordsInRun(text, (Run)navigator.Parent));
+                }
+                navigator = navigator.GetNextContextPosition(LogicalDirection.Forward);
+            }
+
+            foreach (TextTag tag in tags)
+            {
+                var r = new TextRange(tag.StartPosition, tag.EndPosition);
+                r.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Red));
+            }
+
+            TextBoxMain.TextChanged += TextBoxMain_TextChanged;
+        }
+
+        private List<TextTag> CheckWordsInRun(string text, Run theRun)
+        {
+            // from: https://stackoverflow.com/questions/50278754/how-to-highlight-numbers-in-wpf-richtextbox
+            List<TextTag> m_tags = new List<TextTag>();
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (Char.IsNumber(text[i]))
+                {
+                    TextTag t = new TextTag()
+                    {
+                        StartPosition = theRun.ContentStart.GetPositionAtOffset(i, LogicalDirection.Forward),
+                        EndPosition = theRun.ContentStart.GetPositionAtOffset(i + 1, LogicalDirection.Backward)
+                    };
+                    m_tags.Add(t);
+                }
+            }
+            return m_tags;
+        }
+
+        public class TextTag
+        {
+            public required TextPointer StartPosition;
+            public required TextPointer EndPosition;
+        }
+
+        public static void AppendText(System.Windows.Controls.RichTextBox box, string text, SolidColorBrush brush)
+        {
+            TextRange tr = new TextRange(box.Document.ContentEnd, box.Document.ContentEnd);
+            tr.Text = text;
+            tr.ApplyPropertyValue(TextElement.ForegroundProperty, brush);
         }
 
         public void ExitApplication(object sender, EventArgs e)
@@ -113,9 +200,9 @@ namespace KeySmash
                     if (System.Windows.Clipboard.ContainsText())
                     {
                         string clip = System.Windows.Clipboard.GetText();
-                        if (clip.Length == 0) TextBoxMain.Text = "";
-                        if (clip.Length > 50) TextBoxMain.Text = "";
-                        TextBoxMain.Text = clip;
+                        if (clip.Length == 0) UserText = "";
+                        if (clip.Length > 50) UserText = "";
+                        UserText = clip;
                     }
                 }
             }
@@ -168,7 +255,7 @@ namespace KeySmash
 
         private void SendText(int delay)
         {
-            TextToSend = TextBoxMain.Text;
+            TextToSend = UserText;
             if (TextToSend == "") return;
             TimerStartKeysDelay = TimeSpan.FromMilliseconds(delay);
             SendKeyStartTimer.Interval = TimerStartKeysDelay;

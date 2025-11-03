@@ -61,7 +61,7 @@
             </Menu>
 
             <Grid Width="50" Height="20"/>
-            <TextBox x:Name="TextBoxMain" Width="170" Margin="2 2" FontFamily="Consolas" FontSize="14"/>
+            <RichTextBox x:Name="TextBoxMain" Width="170" Margin="2 2" FontFamily="Consolas" FontSize="14"/>
 
             <Button x:Name="ButtonSendText" Content="Send" Padding="3 0" Margin="2 2" Click="ButtonSendText_Click"/>
         </StackPanel>
