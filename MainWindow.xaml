@@ -7,13 +7,32 @@
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
         Height="25" Background="LightGray"
-        Title="KeySmash" ResizeMode="NoResize" WindowStyle="None">
+        Title="KeySmash" ResizeMode="NoResize" WindowStyle="None" Loaded="Window_Loaded">
     <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.ColumnSpan="2">
 
             <Menu x:Name="SettingsMenu" Margin="2">
                 <MenuItem Header="⚙">
-                    <MenuItem Header="_Hotkeys"/>
+                    <MenuItem Header="_Hotkeys">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Type text" Width="100"/>
+                            <TextBox x:Name="HotkeyTypeTextKey" Width="30"/>
+                            <TextBlock Text="Key" Margin="5 0"/>
+                            <CheckBox Content="Ctrl" x:Name="HotkeyTypeTextCtrl" Margin="10 0"  VerticalAlignment="Center"/>
+                            <CheckBox Content="Alt" x:Name="HotkeyTypeTextAlt" Margin="10 0"  VerticalAlignment="Center"/>
+                            <CheckBox Content="Shift" x:Name="HotkeyTypeTextShift" Margin="10 0"  VerticalAlignment="Center"/>
+                            
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Get Clipboard" Width="100"/>
+                            <TextBox x:Name="HotkeyGetClipboardKey" Width="30"/>
+                            <TextBlock Text="Key" Margin="5 0"/>
+                            <CheckBox Content="Ctrl" x:Name="HotkeyGetClipboardCtrl" Margin="10 0"  VerticalAlignment="Center"/>
+                            <CheckBox Content="Alt" x:Name="HotkeyGetClipboardAlt" Margin="10 0"  VerticalAlignment="Center"/>
+                            <CheckBox Content="Shift" x:Name="HotkeyGetClipboardShift" Margin="10 0"  VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Button Content="Save" Width="100" Click="UpdateHotkeys"/>
+                    </MenuItem>
                     <MenuItem Header="_Delay">
                         
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
