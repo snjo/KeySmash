@@ -3,7 +3,6 @@ using KeySmash;
 using KeySmash.Properties;
 using System.Configuration;
 using System.Diagnostics;
-using System.Windows;
 
 namespace Hotkeys
 {
@@ -14,8 +13,7 @@ namespace Hotkeys
         {
             foreach (string name in hotkeyNames)
             {
-                if (hotkeyList.ContainsKey(name))
-                    hotkeyList.Remove(name);
+                hotkeyList.Remove(name);
                 hotkeyList.Add(name, LoadHotkey(name, parent));
             }
             return hotkeyList;
@@ -23,18 +21,19 @@ namespace Hotkeys
 
         public static Hotkey LoadHotkey(string hotkeyName, MainWindow parent) //char settingHotkey
         {
-            Hotkey hotkey = new Hotkey();
-
-            hotkey.Key = getSettingString("hk" + hotkeyName + "Key", "");
-            hotkey.Ctrl = getSettingBool("hk" + hotkeyName + "Ctrl", false);
-            hotkey.Alt  = getSettingBool("hk" + hotkeyName + "Alt", false);
-            hotkey.Shift= getSettingBool("hk" + hotkeyName + "Shift", false);
-            hotkey.Win  = getSettingBool("hk" + hotkeyName + "Win", false);
+            Hotkey hotkey = new()
+            {
+                Key = GetSettingString("hk" + hotkeyName + "Key", ""),
+                Ctrl = GetSettingBool("hk" + hotkeyName + "Ctrl", false),
+                Alt = GetSettingBool("hk" + hotkeyName + "Alt", false),
+                Shift = GetSettingBool("hk" + hotkeyName + "Shift", false),
+                Win = GetSettingBool("hk" + hotkeyName + "Win", false)
+            };
             hotkey.ghk = new GlobalHotkey(hotkey.Modifiers(), hotkey.Key, parent, hotkeyName);
             return hotkey;
         }
 
-        private static string getSettingString(string key, string fallback)
+        private static string GetSettingString(string key, string fallback)
         {
             if (DoesSettingExist(key))
             {
@@ -47,7 +46,7 @@ namespace Hotkeys
             }
         }
 
-        private static bool getSettingBool(string key, bool fallback)
+        private static bool GetSettingBool(string key, bool fallback)
         {
             if (DoesSettingExist(key))
             {
@@ -109,7 +108,7 @@ namespace Hotkeys
         {
             string warningText = "Could not register hotkeys:";
             Debug.WriteLine($"Registering {hotkeyList.Count} hotkeys");
-            List<string> warningKeys = new List<string>();
+            List<string> warningKeys = [];
             foreach (KeyValuePair<string, Hotkey> hk in hotkeyList)
             {
                 if (hk.Value.Key != string.Empty)
@@ -145,10 +144,7 @@ namespace Hotkeys
 
         public static void ReleaseHotkey(GlobalHotkey ghk)
         {
-            if (ghk != null)
-            {
-                ghk.Unregister();
-            }
+            ghk?.Unregister();
         }
 
         public static void UpdateHotkeys(Dictionary<string, Hotkey> hotkeyList, List<string> hotkeyNames, MainWindow parent)

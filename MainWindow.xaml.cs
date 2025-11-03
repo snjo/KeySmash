@@ -1,21 +1,12 @@
 ﻿using Hotkeys;
 using KeySmash.Properties;
-using System.Collections;
 using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace KeySmash
@@ -32,10 +23,10 @@ namespace KeySmash
         private TimeSpan TimerKeyStrokeInterval;
         private string TextToSend = "";
         private List<string> KeySequence = [];
-        DispatcherTimer SendKeyStartTimer = new DispatcherTimer();
-        DispatcherTimer SendKeyStrokeTimer = new DispatcherTimer();
+        DispatcherTimer SendKeyStartTimer = new();
+        DispatcherTimer SendKeyStrokeTimer = new();
         public nint Handle = 0;
-            
+
         public bool UseKeyInterval { get; set; } = false;
         public bool FixScandinavianCaret { get; set; } = true;
 
@@ -48,7 +39,6 @@ namespace KeySmash
             set
             {
                 _hiddenText = value;
-                //MenuItemToggleHiddenText.IsChecked = _hiddenText;
             }
         }
 
@@ -78,7 +68,7 @@ namespace KeySmash
         }
 
         public void ExitApplication(object sender, EventArgs e)
-        { 
+        {
             Close();
         }
 
@@ -87,12 +77,12 @@ namespace KeySmash
         Settings settings = Settings.Default;
 
         // For each hotkey below, add entries in Settings, hk???Key, hk???Ctrl, hk???Alt, hk???Shift, hk???Win
-        public List<string> HotkeyNames = new List<string>
-        {
+        public List<string> HotkeyNames =
+        [
             "GetClipboard",
             "TypeText",
-        };
-        public Dictionary<string, Hotkey> HotkeyList = new Dictionary<string, Hotkey>();
+        ];
+        public Dictionary<string, Hotkey> HotkeyList = [];
 
         const int MYACTION_HOTKEY_ID = 1;
         // DLL libraries used to manage hotkeys
@@ -103,27 +93,11 @@ namespace KeySmash
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            //Debug.WriteLine($"wndproc {msg}");
             if (msg == 0x0312)
             {
-                //Debug.WriteLine($"hotkey pressed: {hwnd}, {msg}, {wParam}, {lParam}");
-                Keys key = (Keys)(((int)lParam >> 16) & 0xFFFF);                  // The key of the hotkey that was pressed.
-                KeyModifier modifier = (KeyModifier)((int)lParam & 0xFFFF);       // The modifier of the hotkey that was pressed.
                 int id = wParam.ToInt32();                                        // The id of the hotkey that was pressed.
-                //Debug.WriteLine($"KEY: {key} MODIFIER {modifier} ID {id}");
                 HandleHotkey(id);
             }
-
-            //if (msg == Hotkeys.Constants.WM_HOTKEY_MSG_ID)
-            //{
-                //Keys key = (Keys)(((int)lParam >> 16) & 0xFFFF);                  // The key of the hotkey that was pressed.
-                //KeyModifier modifier = (KeyModifier)((int)lParam & 0xFFFF);       // The modifier of the hotkey that was pressed.
-                //int id = wParam.ToInt32();                                        // The id of the hotkey that was pressed.
-                ////MessageBox.Show("Hotkey " + id + " has been pressed!");
-                //HandleHotkey(id);
-            //}
-
-            //HandleHotkey(id);
 
             return IntPtr.Zero;
         }
@@ -171,8 +145,7 @@ namespace KeySmash
             HotkeyList = HotkeyTools.LoadHotkeys(HotkeyList, HotkeyNames, this);
             Debug.WriteLine($"Handle: {Handle}");
             Debug.WriteLine($"Register hotkeys");
-            var source = PresentationSource.FromVisual(this as Visual) as HwndSource;
-            if (source == null)
+            if (PresentationSource.FromVisual(this as Visual) is not HwndSource source)
                 throw new Exception("Could not create hWnd source from window.");
             source.AddHook(WndProc);
 
@@ -184,11 +157,6 @@ namespace KeySmash
             }
 
             SetBackgroundColor(settings.BackgroundColor);
-
-            //test
-            //RegisterHotKey(new WindowInteropHelper(this).Handle, MYACTION_HOTKEY_ID, (int)Modifiers.Ctrl, (int)Keys.A);
-            //RegisterHotKey(new WindowInteropHelper(this).Handle, 2, (int)Modifiers.Ctrl, (int)Keys.S);
-            //RegisterHotKey(new WindowInteropHelper(this).Handle, 3, (int)Modifiers.Ctrl, (int)Keys.D);
         }
 
         #endregion
@@ -207,10 +175,10 @@ namespace KeySmash
             SendKeyStartTimer.Start();
             //Debug.WriteLine($"Text to send:{TextToSend}:");
             if (TextToSend == "¤") TextToSend = "Lorem Ipsum! {} () [] ^ % ~ ok"; // test string
-            CreateKeySequence(TextToSend);
+            CreateKeySequence();
         }
 
-        private void CreateKeySequence(string text)
+        private void CreateKeySequence()
         {
             KeySequence.Clear();
             string encloseChars = "{}()[]^+%~";
@@ -261,12 +229,12 @@ namespace KeySmash
 
         private void SendKeyStroke(object? sender, EventArgs e)
         {
-            
+
             //Debug.WriteLine($"Keystrokes: {KeySequence.Count}");
             if (KeySequence.Count > 0)
             {
                 string text = KeySequence.First();
-                
+
                 //Debug.WriteLine($"Send keystroke {text}");
                 SendKeys.SendWait(text);
                 KeySequence.RemoveAt(0);
@@ -311,16 +279,13 @@ namespace KeySmash
 
         private void ClickSetBackGroundColor(object sender)//System.Windows.Media.Color color)
         {
-            System.Windows.Media.Color? color = null;
             if (sender is System.Windows.Controls.Button button)
             {
-                //System.Windows.Controls.Button? button = sender as System.Windows.Controls.Button;
                 if (button != null)
                 {
                     if (button.Background is SolidColorBrush br)
                     {
-                        color = br.Color;
-                        //this.SetBackGroundColor(color);
+                        System.Windows.Media.Color? color = br.Color;
                         this.Background = br;
                         Debug.WriteLine($"Setting background color to {color}");
                         settings.BackgroundColor = System.Drawing.Color.FromArgb(color.Value.R, color.Value.G, color.Value.B);
@@ -341,7 +306,6 @@ namespace KeySmash
 
         private void ClickColor(object sender, RoutedEventArgs e)
         {
-            //gray
             ClickSetBackGroundColor(sender);
         }
 

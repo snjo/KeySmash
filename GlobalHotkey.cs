@@ -1,8 +1,6 @@
 ﻿using KeySmash;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Interop;
 
 namespace Hotkeys
 {
@@ -22,7 +20,7 @@ namespace Hotkeys
         private bool validKey;
         public string displayName = "Unnamed";
 
-        public Keys stringToKey(string keystring)
+        public Keys StringToKey(string keystring)
         {
             if (keystring.Length > 0)
             {
@@ -44,7 +42,7 @@ namespace Hotkeys
         public GlobalHotkey(int modifier, string keystring, MainWindow form, string name = "Unnamed")
         {
             this.modifier = modifier;
-            Keys key = stringToKey(keystring);  // assigns validKey
+            Keys key = StringToKey(keystring);  // assigns validKey
             this.key = (int)key;
             this.hWnd = form.Handle;//form.Handle;
             displayName = name;
