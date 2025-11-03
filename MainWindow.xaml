@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:KeySmash"
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
-        Height="25"
+        Height="25" Background="LightGray"
         Title="KeySmash" ResizeMode="NoResize" WindowStyle="None">
     <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.ColumnSpan="2">
@@ -23,6 +23,17 @@
                             </StackPanel>
                         
                     </MenuItem>
+
+                    <MenuItem Header="_Color">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Width="20" Height="20" Margin="2 0" Background="LightGray" Click="ClickColor"/>
+                            <Button Width="20" Height="20" Margin="2 0" Background="Orange" Click="ClickColor"/>
+                            <Button Width="20" Height="20" Margin="2 0" Background="Yellow" Click="ClickColor"/>
+                            <Button Width="20" Height="20" Margin="2 0" Background="Green" Click="ClickColor"/>
+                            <Button Width="20" Height="20" Margin="2 0" Background="CornflowerBlue" Click="ClickColor"/>
+                        </StackPanel>
+                    </MenuItem>
+                    
                     <MenuItem Header="Slow output" IsCheckable="True" x:Name="MenuItemSlowMode" IsChecked="{Binding UseKeyInterval}"/>
                     <MenuItem Header="Fix caret (^)" IsCheckable="True" x:Name="MenuItemFixCaret" IsChecked="{Binding FixScandinavianCaret}"/>
                     <!-- <MenuItem Header="_Hide text" x:Name="MenuItemToggleHiddenText" Click="ToggleHiddenText"/> -->

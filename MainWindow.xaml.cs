@@ -169,5 +169,34 @@ namespace KeySmash
             StartKeysDelayInMilliSeconds = Math.Clamp(StartKeysDelayInMilliSeconds, 500, 5000);
             DelayInput.Text = $"{(float)StartKeysDelayInMilliSeconds / 1000f:0.0}s";
         }
+
+        private void SetBackGroundColor(object sender)//System.Windows.Media.Color color)
+        {
+            System.Windows.Media.Color? color = null;
+            if (sender is System.Windows.Controls.Button button)
+            {
+                //System.Windows.Controls.Button? button = sender as System.Windows.Controls.Button;
+                if (button != null)
+                {
+                    if (button.Background is SolidColorBrush br)
+                    {
+                        color = br.Color;
+                        //this.SetBackGroundColor(color);
+                        this.Background = br;
+                        Debug.WriteLine($"Setting background color to {color}");
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"sender is not button");
+            }
+        }
+
+        private void ClickColor(object sender, RoutedEventArgs e)
+        {
+            //gray
+            SetBackGroundColor(sender);
+        }
     }
 }
