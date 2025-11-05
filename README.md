@@ -12,6 +12,7 @@ F3 - Move application to the mouse position (while the app has focus)
 *These can be changed in the settings menu*
 
 Ctrl+Shift+G - Send clipboard text to the app's text field. Max 50 characters.
+
 Ctrl+Shift+K - Type the text from the text field (simulate key presses)
 
 # How to use
