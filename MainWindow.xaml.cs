@@ -135,7 +135,8 @@ namespace KeySmash
 
             // code from: https://stackoverflow.com/questions/50278754/how-to-highlight-numbers-in-wpf-richtextbox
 
-            var tags = new List<TextTag>();
+            var symbol_tags = new List<TextTag>();
+            var number_tags = new List<TextTag>();
 
             TextPointer navigator = TextBoxMain.Document.ContentStart;
             while (navigator.CompareTo(TextBoxMain.Document.ContentEnd) < 0)
@@ -145,12 +146,21 @@ namespace KeySmash
                 {
                     text = ((Run)navigator.Parent).Text;
                     if (text != "")
-                        tags.AddRange(CheckWordsInRun(text, (Run)navigator.Parent));
+                    {
+                        (var letters, var numbers) = CheckWordsInRun(text, (Run)navigator.Parent);
+                        number_tags.AddRange(numbers);
+                        symbol_tags.AddRange(letters);
+                    }
                 }
                 navigator = navigator.GetNextContextPosition(LogicalDirection.Forward);
             }
 
-            foreach (TextTag tag in tags)
+            foreach (TextTag tag in symbol_tags)
+            {
+                var r = new TextRange(tag.StartPosition, tag.EndPosition);
+                r.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.DarkCyan));
+            }
+            foreach (TextTag tag in number_tags)
             {
                 var r = new TextRange(tag.StartPosition, tag.EndPosition);
                 r.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Red));
@@ -159,13 +169,15 @@ namespace KeySmash
             TextBoxMain.TextChanged += TextBoxMain_TextChanged;
         }
 
-        private List<TextTag> CheckWordsInRun(string text, Run theRun)
+        private (List<TextTag> symbols, List<TextTag> numbers) CheckWordsInRun(string text, Run theRun)
         {
             // from: https://stackoverflow.com/questions/50278754/how-to-highlight-numbers-in-wpf-richtextbox
-            List<TextTag> m_tags = new List<TextTag>();
+            List<TextTag> number_tags = new List<TextTag>();
+            List<TextTag> symbol_tags = new List<TextTag>();
 
             for (int i = 0; i < text.Length; i++)
             {
+                
                 if (Char.IsNumber(text[i]))
                 {
                     TextTag t = new TextTag()
@@ -173,10 +185,19 @@ namespace KeySmash
                         StartPosition = theRun.ContentStart.GetPositionAtOffset(i, LogicalDirection.Forward),
                         EndPosition = theRun.ContentStart.GetPositionAtOffset(i + 1, LogicalDirection.Backward)
                     };
-                    m_tags.Add(t);
+                    number_tags.Add(t);
+                }
+                else if (Char.IsLetter(text[i]) == false)
+                {
+                    TextTag t = new TextTag()
+                    {
+                        StartPosition = theRun.ContentStart.GetPositionAtOffset(i, LogicalDirection.Forward),
+                        EndPosition = theRun.ContentStart.GetPositionAtOffset(i + 1, LogicalDirection.Backward)
+                    };
+                    symbol_tags.Add(t);
                 }
             }
-            return m_tags;
+            return (symbol_tags, number_tags);
         }
 
         public class TextTag
@@ -468,7 +489,7 @@ namespace KeySmash
 
         private void UpdateHotkeys(object sender, RoutedEventArgs e)
         {
-            settings.hkGetClipboardKey = HotkeyGetClipboardKey.Text;
+            settings.hkGetClipboardKey = HotkeyGetClipboardKey.Text.ToUpper();
             if (HotkeyGetClipboardCtrl.IsChecked != null)
             {
                 settings.hkGetClipboardCtrl = (bool)HotkeyGetClipboardCtrl.IsChecked;
@@ -482,7 +503,7 @@ namespace KeySmash
                 settings.hkGetClipboardShift = (bool)HotkeyGetClipboardShift.IsChecked;
             }
             //---
-            settings.hkTypeTextKey = HotkeyTypeTextKey.Text;
+            settings.hkTypeTextKey = HotkeyTypeTextKey.Text.ToUpper();
             if (HotkeyTypeTextCtrl.IsChecked != null)
             {
                 settings.hkTypeTextCtrl = (bool)HotkeyTypeTextCtrl.IsChecked;
