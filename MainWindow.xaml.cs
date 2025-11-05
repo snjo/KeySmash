@@ -29,8 +29,42 @@ namespace KeySmash
         DispatcherTimer SendKeyStrokeTimer = new();
         public nint Handle = 0;
 
-        public bool UseKeyInterval { get; set; } = false;
-        public bool FixScandinavianCaret { get; set; } = true;
+        public bool SlowMode {
+            get
+            {
+                return settings.SlowMode;
+            } 
+            set
+            {
+                settings.SlowMode = value;
+                settings.Save();
+            }
+        }
+        public bool FixScandinavianCaret
+        {
+            get
+            {
+                return settings.FixCaret;
+            }
+            set
+            {
+                settings.FixCaret = value;
+                settings.Save();
+            }
+        }
+
+        public bool ClearClipboard
+        {
+            get
+            {
+                return settings.ClearClipboardAfterGet;
+            }
+            set
+            {
+                settings.ClearClipboardAfterGet = value;
+                settings.Save();
+            }
+        }
 
         public bool HiddenText
         {
@@ -67,6 +101,10 @@ namespace KeySmash
             HotkeyTypeTextCtrl.IsChecked = settings.hkTypeTextCtrl;
             HotkeyTypeTextAlt.IsChecked = settings.hkTypeTextAlt;
             HotkeyTypeTextShift.IsChecked = settings.hkTypeTextShift;
+
+            MenuItemClearClipboard.IsChecked = settings.ClearClipboardAfterGet;
+            MenuItemSlowMode.IsChecked = settings.SlowMode;
+            MenuItemFixCaret.IsChecked = settings.FixCaret;
 
             TextBoxMain.TextChanged += TextBoxMain_TextChanged;
         }
@@ -199,7 +237,17 @@ namespace KeySmash
                 {
                     if (System.Windows.Clipboard.ContainsText())
                     {
-                        string clip = System.Windows.Clipboard.GetText();
+                        string clip;
+                        try
+                        {
+                            clip = System.Windows.Clipboard.GetText();
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Error fetching clipboard: {ex.Message}");
+                            return;
+                        }
+
                         if (clip.Length == 0 || clip.Length > 50)
                         {
                             UserText = "";
@@ -208,6 +256,17 @@ namespace KeySmash
                         else
                         {
                             UserText = clip;
+                            if (settings.ClearClipboardAfterGet)
+                            {
+                                try
+                                {
+                                    System.Windows.Clipboard.Clear();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.WriteLine($"Error clearing clipboard: : {ex.Message}");
+                                }
+                            }
                         }
                     }
                 }
@@ -304,7 +363,7 @@ namespace KeySmash
             SendKeyStartTimer.Stop();
             SendKeyStrokeTimer.Interval = TimerKeyStrokeInterval;
 
-            if (UseKeyInterval)
+            if (SlowMode)
             {
                 SendKeyStrokeTimer.Start();
             }
@@ -394,6 +453,11 @@ namespace KeySmash
 
         private void SetBackgroundColor(System.Drawing.Color color)
         {
+            if (color == System.Drawing.Color.Empty)
+            {
+                color = System.Drawing.Color.LightGray;
+            }
+            Debug.WriteLine($"Background color: {color}");
             this.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color.R, color.G, color.B));
         }
 
@@ -434,6 +498,16 @@ namespace KeySmash
 
             settings.Save();
             HotkeyTools.UpdateHotkeys(HotkeyList, HotkeyNames, this);
+        }
+
+        private void WindowKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.F3) // move window to mouse position
+            {
+                System.Drawing.Point mousePos = Control.MousePosition;
+                this.Top = mousePos.Y - 10;
+                this.Left = mousePos.X - 150;
+            }
         }
     }
 }

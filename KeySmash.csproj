@@ -7,7 +7,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\Github\cert\keypair.snk</AssemblyOriginatorKeyFile>
+    <ApplicationIcon>img\fist.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="fist_32.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="img\fist.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="fist_32.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

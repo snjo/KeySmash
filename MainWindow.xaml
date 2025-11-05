@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
         Height="25" Background="LightGray"
-        Title="KeySmash" ResizeMode="NoResize" WindowStyle="None" Loaded="Window_Loaded">
+        Title="KeySmash" ResizeMode="NoResize" WindowStyle="None" Loaded="Window_Loaded" Icon="/fist_32.png"
+        KeyDown="WindowKeyDown">
     <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.ColumnSpan="2">
 
@@ -53,8 +54,9 @@
                         </StackPanel>
                     </MenuItem>
                     
-                    <MenuItem Header="Slow output" IsCheckable="True" x:Name="MenuItemSlowMode" IsChecked="{Binding UseKeyInterval}"/>
+                    <MenuItem Header="Slow output" IsCheckable="True" x:Name="MenuItemSlowMode" IsChecked="{Binding SlowMode}"/>
                     <MenuItem Header="Fix caret (^)" IsCheckable="True" x:Name="MenuItemFixCaret" IsChecked="{Binding FixScandinavianCaret}"/>
+                    <MenuItem Header="Get Clipboard also clears clipboard" IsCheckable="True" x:Name="MenuItemClearClipboard" IsChecked="{Binding ClearClipboard}"/>
                     <!-- <MenuItem Header="_Hide text" x:Name="MenuItemToggleHiddenText" Click="ToggleHiddenText"/> -->
                     <MenuItem Header="E_xit" Click="ExitApplication"/>
                 </MenuItem>
