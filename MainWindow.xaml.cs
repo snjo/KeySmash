@@ -489,7 +489,9 @@ namespace KeySmash
 
         private void UpdateHotkeys(object sender, RoutedEventArgs e)
         {
-            settings.hkGetClipboardKey = HotkeyGetClipboardKey.Text.ToUpper();
+            string getClipboardKey = HotkeyGetClipboardKey.Text;
+            if (getClipboardKey.Length == 1) getClipboardKey = getClipboardKey.ToUpper();
+            settings.hkGetClipboardKey = getClipboardKey;   
             if (HotkeyGetClipboardCtrl.IsChecked != null)
             {
                 settings.hkGetClipboardCtrl = (bool)HotkeyGetClipboardCtrl.IsChecked;
@@ -503,7 +505,9 @@ namespace KeySmash
                 settings.hkGetClipboardShift = (bool)HotkeyGetClipboardShift.IsChecked;
             }
             //---
-            settings.hkTypeTextKey = HotkeyTypeTextKey.Text.ToUpper();
+            string hotkeyTypeTextKey = HotkeyTypeTextKey.Text;
+            if (hotkeyTypeTextKey.Length == 1) hotkeyTypeTextKey = hotkeyTypeTextKey.ToUpper();
+            settings.hkTypeTextKey = hotkeyTypeTextKey;
             if (HotkeyTypeTextCtrl.IsChecked != null)
             {
                 settings.hkTypeTextCtrl = (bool)HotkeyTypeTextCtrl.IsChecked;

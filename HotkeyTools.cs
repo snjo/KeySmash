@@ -139,6 +139,7 @@ namespace Hotkeys
             foreach (KeyValuePair<string, Hotkey> ghk in hotkeyList)
             {
                 ReleaseHotkey(ghk.Value.ghk);
+                Debug.WriteLine($"Released hotkey {ghk.Key}");
             }
         }
 
