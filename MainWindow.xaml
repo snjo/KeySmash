@@ -13,7 +13,7 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.ColumnSpan="2">
 
             <Menu x:Name="SettingsMenu" Margin="2">
-                <MenuItem Header="⚙">
+                <MenuItem Header="⚙" x:Name="OptionButton" FontSize="14">
                     <MenuItem Header="_Hotkeys">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Type text" Width="100"/>
@@ -53,7 +53,7 @@
                             <Button Width="20" Height="20" Margin="2 0" Background="CornflowerBlue" Click="ClickColor"/>
                         </StackPanel>
                     </MenuItem>
-                    
+                    <MenuItem Header="Toggle Large mode" Click="ToggleLargeMode"/>
                     <MenuItem Header="Slow output" IsCheckable="True" x:Name="MenuItemSlowMode" IsChecked="{Binding SlowMode}"/>
                     <MenuItem Header="Fix caret (^)" IsCheckable="True" x:Name="MenuItemFixCaret" IsChecked="{Binding FixScandinavianCaret}"/>
                     <MenuItem Header="Get Clipboard also clears clipboard" IsCheckable="True" x:Name="MenuItemClearClipboard" IsChecked="{Binding ClearClipboard}"/>

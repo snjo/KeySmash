@@ -534,5 +534,19 @@ namespace KeySmash
                 this.Left = mousePos.X - 150;
             }
         }
+
+        private bool LargeMode = false;
+        private void ToggleLargeMode(object sender, EventArgs e)
+        {
+            LargeMode = !LargeMode;
+            int fontSize = 14;
+            if (LargeMode)
+            {
+                fontSize = 24;
+            }
+            TextBoxMain.Width = (fontSize * 10) + 30;
+            TextBoxMain.FontSize = fontSize;
+            OptionButton.FontSize = fontSize;
+        }
     }
 }
