@@ -546,7 +546,7 @@ namespace KeySmash
             }
             TextBoxMain.Width = (fontSize * 10) + 30;
             TextBoxMain.FontSize = fontSize;
-            OptionButton.FontSize = fontSize;
+            //OptionButton.FontSize = fontSize;
         }
     }
 }
