@@ -57,7 +57,14 @@
                     <MenuItem Header="Slow output" IsCheckable="True" x:Name="MenuItemSlowMode" IsChecked="{Binding SlowMode}"/>
                     <MenuItem Header="Fix caret (^)" IsCheckable="True" x:Name="MenuItemFixCaret" IsChecked="{Binding FixScandinavianCaret}"/>
                     <MenuItem Header="Get Clipboard also clears clipboard" IsCheckable="True" x:Name="MenuItemClearClipboard" IsChecked="{Binding ClearClipboard}"/>
-                    <MenuItem Header="Clear text after 1 hour" IsCheckable="True" x:Name="MenuItemClearAfterInactivity" IsChecked="{Binding ResetTextAfterInactivity}"/>
+
+                    <MenuItem x:Name="MenuItemClearAfterInactivity">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Content="-" Padding="5 0" Click="ClickDecreaseResetTimer"/>
+                            <TextBlock x:Name="ResetTimerInput" Text="0" Width="40" HorizontalAlignment="Center" Padding="5 0"/>
+                            <Button Content="+" Padding="5 0" Click="ClickIncreaseResetTimer"/>
+                        </StackPanel>
+                    </MenuItem>
                     <!-- <MenuItem Header="_Hide text" x:Name="MenuItemToggleHiddenText" Click="ToggleHiddenText"/> -->
                     <MenuItem Header="E_xit" Click="ExitApplication"/>
                 </MenuItem>

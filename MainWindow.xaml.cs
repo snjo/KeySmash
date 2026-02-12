@@ -1,5 +1,6 @@
 ﻿using Hotkeys;
 using KeySmash.Properties;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -20,6 +21,7 @@ namespace KeySmash
     {
         private bool _hiddenText = true;
         int StartKeysDelayInMilliSeconds = 2000;
+        int ResetTextAfterMinutes = 15;
         int KeysIntervalInMilliSeconds = 50;
         private TimeSpan TimerStartKeysDelay;
         private TimeSpan TimerKeyStrokeInterval;
@@ -79,8 +81,30 @@ namespace KeySmash
             {
                 settings.ResetTextAfterInactivity = value;
                 settings.Save();
+                MenuItemClearAfterInactivity.IsChecked = value;
+                //OnPropertyChanged(nameof(ResetTextAfterInactivity));
             }
         }
+
+        //public string ResetTextOption_Text
+        //{
+        //    get
+        //    {
+        //        return $"Reset text after {settings.ResetTextAfterMinutes}m";
+        //    }
+        //}
+
+        //public string ResetTextMinutes
+        //{
+        //    get
+        //    {
+        //        return settings.ResetTextAfterMinutes.ToString();
+        //    }
+        //    set
+        //    {
+
+        //    }
+        //}
 
         public bool HiddenText
         {
@@ -99,6 +123,7 @@ namespace KeySmash
             InitializeComponent();
             this.DataContext = this;
             StartKeysDelayInMilliSeconds = settings.TypingStartDelay;
+            ResetTextAfterMinutes = settings.ResetTextAfterMinutes;
             TimerStartKeysDelay = TimeSpan.FromMilliseconds(StartKeysDelayInMilliSeconds);
             TimerKeyStrokeInterval = TimeSpan.FromMilliseconds(KeysIntervalInMilliSeconds);
             HiddenText = true;
@@ -123,10 +148,11 @@ namespace KeySmash
             MenuItemFixCaret.IsChecked = settings.FixCaret;
 
             TextBoxMain.TextChanged += TextBoxMain_TextChanged;
-            resetTextAfterTime = TimeSpan.FromSeconds(10);
+            resetTextAfterTime = TimeSpan.FromMinutes(settings.ResetTextAfterMinutes);
             resetTextTimer.Interval = TimeSpan.FromSeconds(5);
             resetTextTimer.Tick += resetTimer_Tick;
             resetTextTimer.Start();
+            UpdateResetTextDelay();
         }
 
         private void resetTimer_Tick(object? sender, EventArgs e)
@@ -143,11 +169,11 @@ namespace KeySmash
                 Debug.WriteLine($"Resetting text");
 
                 TextBoxMain.Document.Blocks.Clear();
-                lastTextChange = DateTime.MaxValue;
+                lastTextChange = DateTime.Now;
             }
             else
             {
-                Debug.WriteLine($"No reset {sinceChange.TotalSeconds} / {resetTextAfterTime.TotalSeconds}");
+                Debug.WriteLine($"No reset. {sinceChange.TotalSeconds}s passed, limit is {resetTextAfterTime.TotalSeconds}s");
             }
         }
 
@@ -249,12 +275,12 @@ namespace KeySmash
             public required TextPointer EndPosition;
         }
 
-        public static void AppendText(System.Windows.Controls.RichTextBox box, string text, SolidColorBrush brush)
-        {
-            TextRange tr = new TextRange(box.Document.ContentEnd, box.Document.ContentEnd);
-            tr.Text = text;
-            tr.ApplyPropertyValue(TextElement.ForegroundProperty, brush);
-        }
+        //public static void AppendText(System.Windows.Controls.RichTextBox box, string text, SolidColorBrush brush)
+        //{
+        //    TextRange tr = new TextRange(box.Document.ContentEnd, box.Document.ContentEnd);
+        //    tr.Text = text;
+        //    tr.ApplyPropertyValue(TextElement.ForegroundProperty, brush);
+        //}
 
         public void ExitApplication(object sender, EventArgs e)
         {
@@ -492,6 +518,38 @@ namespace KeySmash
             settings.TypingStartDelay = StartKeysDelayInMilliSeconds;
             settings.Save();
         }
+
+        private void ClickDecreaseResetTimer(object  sender, RoutedEventArgs e)
+        {
+            ResetTextAfterMinutes -= 5;
+            UpdateResetTextDelay();
+        }
+
+        private void ClickIncreaseResetTimer(object sender, RoutedEventArgs e)
+        {
+            ResetTextAfterMinutes += 5;
+            UpdateResetTextDelay();
+        }
+
+        public void UpdateResetTextDelay()
+        {
+            ResetTextAfterMinutes = Math.Clamp(ResetTextAfterMinutes, 0, 10000);
+            if (ResetTextAfterMinutes == 0)
+            {
+                ResetTextAfterInactivity = false;
+            }
+            else
+            {
+                ResetTextAfterInactivity = true;
+            }
+            ResetTimerInput.Text = $"{ResetTextAfterMinutes}m";
+            string headerText = $"Reset text after {ResetTextAfterMinutes}m";
+            if (ResetTextAfterMinutes <= 0) headerText += " (Off)";
+            MenuItemClearAfterInactivity.Header = headerText;
+            settings.ResetTextAfterMinutes = ResetTextAfterMinutes;
+            settings.Save();
+        }
+
 
         private void ClickSetBackGroundColor(object sender)//System.Windows.Media.Color color)
         {
