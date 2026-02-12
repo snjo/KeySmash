@@ -57,13 +57,14 @@
                     <MenuItem Header="Slow output" IsCheckable="True" x:Name="MenuItemSlowMode" IsChecked="{Binding SlowMode}"/>
                     <MenuItem Header="Fix caret (^)" IsCheckable="True" x:Name="MenuItemFixCaret" IsChecked="{Binding FixScandinavianCaret}"/>
                     <MenuItem Header="Get Clipboard also clears clipboard" IsCheckable="True" x:Name="MenuItemClearClipboard" IsChecked="{Binding ClearClipboard}"/>
+                    <MenuItem Header="Clear text after 1 hour" IsCheckable="True" x:Name="MenuItemClearAfterInactivity" IsChecked="{Binding ResetTextAfterInactivity}"/>
                     <!-- <MenuItem Header="_Hide text" x:Name="MenuItemToggleHiddenText" Click="ToggleHiddenText"/> -->
                     <MenuItem Header="E_xit" Click="ExitApplication"/>
                 </MenuItem>
             </Menu>
 
             <Grid Width="50" Height="20"/>
-            <RichTextBox x:Name="TextBoxMain" Width="170" Margin="2 2" FontFamily="Consolas" FontSize="14" IsUndoEnabled="False"/>
+            <RichTextBox x:Name="TextBoxMain" Width="170" Margin="2 2" FontFamily="Consolas" FontSize="14" IsUndoEnabled="False" TextChanged="TextBoxMain_TextChanged"/>
 
             <Button x:Name="ButtonSendText" Content="Send" Padding="3 0" Margin="2 2" Click="ButtonSendText_Click"/>
         </StackPanel>

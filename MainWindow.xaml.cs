@@ -27,6 +27,9 @@ namespace KeySmash
         private List<string> KeySequence = [];
         DispatcherTimer SendKeyStartTimer = new();
         DispatcherTimer SendKeyStrokeTimer = new();
+        DateTime lastTextChange = DateTime.MinValue;
+        DispatcherTimer resetTextTimer = new();
+        TimeSpan resetTextAfterTime;
         public nint Handle = 0;
 
         public bool SlowMode {
@@ -62,6 +65,19 @@ namespace KeySmash
             set
             {
                 settings.ClearClipboardAfterGet = value;
+                settings.Save();
+            }
+        }
+
+        public bool ResetTextAfterInactivity
+        {
+            get
+            {
+                return settings.ResetTextAfterInactivity;
+            }
+            set
+            {
+                settings.ResetTextAfterInactivity = value;
                 settings.Save();
             }
         }
@@ -107,6 +123,32 @@ namespace KeySmash
             MenuItemFixCaret.IsChecked = settings.FixCaret;
 
             TextBoxMain.TextChanged += TextBoxMain_TextChanged;
+            resetTextAfterTime = TimeSpan.FromSeconds(10);
+            resetTextTimer.Interval = TimeSpan.FromSeconds(5);
+            resetTextTimer.Tick += resetTimer_Tick;
+            resetTextTimer.Start();
+        }
+
+        private void resetTimer_Tick(object? sender, EventArgs e)
+        {
+            if (Properties.Settings.Default.ResetTextAfterInactivity == false)
+            {
+                Debug.WriteLine($"Reset text is OFF");
+                return;
+            }
+            TimeSpan sinceChange = DateTime.Now - lastTextChange;
+            resetTextAfterTime = TimeSpan.FromMinutes(Properties.Settings.Default.ResetTextAfterMinutes);
+            if (sinceChange > resetTextAfterTime)
+            {
+                Debug.WriteLine($"Resetting text");
+
+                TextBoxMain.Document.Blocks.Clear();
+                lastTextChange = DateTime.MaxValue;
+            }
+            else
+            {
+                Debug.WriteLine($"No reset {sinceChange.TotalSeconds} / {resetTextAfterTime.TotalSeconds}");
+            }
         }
 
         private string UserText
@@ -167,6 +209,7 @@ namespace KeySmash
             }
 
             TextBoxMain.TextChanged += TextBoxMain_TextChanged;
+            lastTextChange = DateTime.Now;
         }
 
         private (List<TextTag> symbols, List<TextTag> numbers) CheckWordsInRun(string text, Run theRun)

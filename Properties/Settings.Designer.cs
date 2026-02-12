@@ -213,5 +213,29 @@ namespace KeySmash.Properties {
                 this["ClearClipboardAfterGet"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int ResetTextAfterMinutes {
+            get {
+                return ((int)(this["ResetTextAfterMinutes"]));
+            }
+            set {
+                this["ResetTextAfterMinutes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ResetTextAfterInactivity {
+            get {
+                return ((bool)(this["ResetTextAfterInactivity"]));
+            }
+            set {
+                this["ResetTextAfterInactivity"] = value;
+            }
+        }
     }
 }
